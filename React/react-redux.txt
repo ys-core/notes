@@ -1,0 +1,103 @@
+
+
+mapStateToProps:
+
+
+let getVisiblity = (todos, filter) => {
+	switch(filter){
+		case 'SHOW_COMPLETED':
+            return todos.filter(t => t.completed)
+        case 'SHOW_ACTIVE':
+            return todos.filter(t => !t.completed)
+        case 'SHOW_ALL':
+        default:
+            return todos	
+	}
+}
+
+const mapStateToProps = state => {
+	return{
+		todos: getVisiblity(state.todos,state.visibility)
+	}
+}
+
+
+
+
+下面是createStore方法的一个简单实现：
+
+const createStore = (reducer) => {
+  let state;
+  let listeners = [];
+  const getState = () => state;
+  const dispatch = (action) => {
+    state = reducer(state, action);
+    listeners.forEach(listener => listener());
+  };
+  const subscribe = (listener) => {
+    listeners.push(listener);
+    return () => {
+      listeners = listeners.filter(l => l !== listener);
+    }
+  };
+  dispatch({});  //创建store时会派发一次
+  return { getState, dispatch, subscribe };
+};
+
+
+
+
+
+createStore方法的精简实现：
+const createStore = reducer =>{
+	let state
+	let listeners = []
+	const getState = () => state
+	const dispatch = action => {
+		state = reducer(state,action)
+		listeners.forEach(listener => listener())	
+	}
+	const subscribe = listener => {
+		listeners.push(listener)
+		return () => {
+			listeners = listeners.filter(item => item !== listener)
+		}
+	}
+	dispatch({})
+    return { getState, dispatch, subscribe}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

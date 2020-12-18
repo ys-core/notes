@@ -1,0 +1,10 @@
+
+
+插槽:
+	插槽允许我们将子组件中的内容分发到父组件,由父组件决定子组件要渲染的内容
+
+具名插槽在父组件中调用时:
+
+    <template v-slot:title>
+      <span><icon type="waves"> 书籍列表</span>
+    <template>

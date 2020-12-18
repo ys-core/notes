@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <style>
+		body{
+			height:400vh;
+		}
+        #root{
+            border: 2px solid black;
+            /* overflow: auto; */
+            /* height: 2000px; */
+        }
+        #test1{
+            height: 100px;
+            width: 30%;
+            background-color: red;
+            float: left;
+            /* margin: 50px; */
+            margin-left: 10px;
+
+        }
+        .test2{
+            height: 120px;
+            /* width: 100px; */
+            background-color: blue;
+            /* float: left; */
+            /* display: inline-block; */
+             overflow:hidden;
+            /* margin: 50px; */
+        }
+        .test3{
+            height: 100px;
+            width: 30%;
+            background-color: yellow;
+            float: right;
+            margin-right: 20px;
+
+        }
+        #foot1{
+            height: 60px;
+            width: 100%;
+            background-color: yellow;
+            /* float: left; */
+            /* margin-bottom: 100px; */
+            display: flex;
+            /* justify-content: space-between; */
+			flex-direction: row;
+			justify-content:center;
+			align-items:center;
+        }
+        li{
+            list-style-type: none;
+           
+        }
+        .g-login{
+            margin-left: auto;
+			background-color: red;
+        }
+        #foot2{
+            width: 50px;
+			height: 70px;
+            background-color: purple;
+            /* margin-top: 100px; */
+            /* display: inline-block; */
+            /* overflow: hidden; */
+            margin-left: auto;
+        }
+		 #foot3{
+            width: 200px;
+			height: 100px;
+            background-color: blue;
+            border-radius: 200px/100px;  
+		}
+		#up{
+			width: 100px;
+			height: 50px;
+			color:red;
+			border-left: 50px solid pink;
+			border-top: 50px solid green;
+			border-right: 50px solid gray;
+			border-bottom: 200px solid red;
+			
+		}
+		#five{
+			width: 0;
+			height: 0;
+			color: red;
+			margin: 50px 0;
+			position: relative;
+			display: block;
+			border-left: 100px solid transparent;
+			border-right: 100px solid transparent;
+			border-bottom: 70px solid red;
+			-moz-transfrom:rotate(35deg);
+			-webkit-transform:rotate(35deg);
+			-ms-transform:rotate(35deg);
+			-o-transform:rotate(35deg);
+
+		}
+				
+		#five:before{
+			width: 0;
+			height: 0;
+			border-left: 30px solid transparent;
+			border-right: 30px solid transparent;
+			border-bottom: 80px solid red;
+			position: absolute;
+			top: -45px;
+			left: -65px;
+			color: white;
+			display: block;
+			content: "";
+			-moz-transform:rotate(-35deg);
+			-webkit-transform:rotate(-35deg);
+			-ms-transform:rotate(-35deg);
+			-o-transform:rotate(-35deg); 
+		}
+		#five:after{
+			width: 0;
+			height: 0;
+			display: block;
+			position: absolute;
+			color: red;
+			top: 3px;
+			left: -105px;
+			border-left: 100px solid transparent;
+			border-right: 100px solid transparent;
+			border-bottom: 70px solid red;
+			content: "";
+			-moz-transform:rotate(-70deg);
+			-webkit-transform:rotate(-70deg);
+			-ms-transform:rotate(-70deg);
+			-o-transform:rotate(-70deg);
+		}
+
+
+		#helo{
+			width: 0;
+			height: 0;
+			border: solid 100px red;
+			border-color: red transparent green transparent;
+			border-radius: 100px;
+		}
+		p::before{
+			content: '我实在P标签前的兄弟元素';
+			background-color: purple;
+		}
+		p::after{
+			content: '我实在P标签后的兄弟元素';
+		}
+		
+		
+    </style>
+
+
+</head>
+<body>
+
+
+    <div id="root">
+        <div id="test1"></div>
+        <div class="test3"></div>
+        <div class="test2"></div>
+    </div>
+    <div id="foot1">
+           <li>LIBA</li>
+           <li>LIBB</li>
+           <li>LIBC</li>
+           <li>LIBD</li>
+           <li>LIBE</li>
+           <li class="g-login">LIBF</li>
+           <li>LIBG</li>
+    </div>
+
+	
+	
+
+
+    <div id="helo"></div>
+	<div id="foot2"></div>
+	<div id="foot3"></div>
+	<div id="up"></div>
+	<div id="five"></div>
+	<div>
+	父元素计算高度时，2不会将浮动元素的高度计算进去，所以可以考虑将父元素设置为BFC
+	
+	</div>
+</body>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+
+
+<script>
+    // undefined转为数值为NaN,null转为数值为0
+    // 原型式继承与es5中的Object.create()传入一个参数时的效果一样
+    // 防抖，在事件触发后n秒再执行回调，若再n秒内又触发了该事件，则重新计时
+    // 节流，规定一个单位时间，在这个单位时间内，只能有一次触发事件的回调函数执行，如果在同一个单位时间内某事件被触发多次，只有一次能生效
+    // setTimeout()会把一个函数放入到任务队列，然后走一个event loop，
+    // 父元素计算高度时，不会将浮动元素的高度计算进去，所以可以考虑BFC   
+    // 要使得单个元素使用margin:auto 在垂直方向上能够居中，需使该元素处在FFC,GFC上下文中   
+
+// function cal(){
+//     console.log(arguments);
+//     console.log(Array.from(arguments));
+//      return Array.from(arguments).reduce((count,cV,cI) => count + cV * cV,0);
+// }
+
+// // cal(2,3,4);
+// console.log(cal(2,3,4));
+
+
+// sayName('world');
+// sayAge(10);
+// function sayName(name){
+//   console.log('hello ', name);
+// }
+// var sayAge = function(age){
+//   console.log(age);
+// };
+
+
+// var arr = [3, 4, 6]
+// function squireArr( arr ){
+//     arr.forEach((element,index,arr) => {
+//         arr[index] = arr[index] * arr[index];
+//     });
+// }
+// squireArr(arr)
+// console.log(arr)  //-->[9, 16, 36]
+
+// let newArr = arr.map(Math.sqrt);
+// console.log(newArr);
+
+
+var company = {
+name: 'qdywxs',
+age: 3,
+sex: '男',
+prop: {a:1,b:2}
+}
+
+Object.keys(company).forEach(key => {
+console.log(key,company[key]);
+})
+
+Object.getOwnPropertyNames(company).forEach(key => {
+console.log(key,company[key]);
+})
+
+
+
+var fnArr = [];
+for (var i = 0; i < 10; i ++) {
+ ((arg) => {
+     fnArr[i] = () => arg;
+ })(i);
+}
+console.log(fnArr[3]());
+
+let a = new Proxy({},{
+    i:1,
+    get: function(){
+        return () => this.i++;
+    }
+});
+
+console.log(a == 1 && a == 2 && a == 3);
+
+
+function sayHello(name,age){
+	console.log(arguments[0]);
+    console.log([].slice.call(arguments));
+    console.log([].shift.call(arguments));
+
+}
+sayHello("Mingming~",25);
+
+console.log(sayHello);
+
+</script>
+
+<script>
+
+    $(document).ready(function(){
+		console.log(document.URL)
+		console.log(document.body)
+		var min_height = 100;
+		$(window).scroll(function(){
+			var top = document.documentElement.scrollTop || document.body.scrollTop;
+			var windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+			var scrollHeight = document.documentElement.scrollHeight||document.body.scrollHeight;
+			console.log(top,windowHeight,scrollHeight);
+		})   
+    });
+
+
+
+</script>
+
+</html>
+
+
+
+

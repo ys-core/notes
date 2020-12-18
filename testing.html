@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <style>
+ html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .outer {
+           position:relative;
+		   height: 100%;
+        }
+
+        h3 {
+            margin: 0;
+            padding: 0;
+        }
+
+        .head {
+            background-color: antiquewhite;
+            height: 20vh;
+            
+        }
+		.container{
+			background: red;
+			height: calc(100% - 20vh);
+			widht: 100%;
+		}
+		 p {
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+
+
+  
+
+    </style>
+
+
+</head>
+<body>
+<div id="app" class="outer">
+        <h3 class="head">Head组件</h3>
+        <div class="container">
+            <h3 class="left">Left组件</h3>
+            <h3 class="main">Main组件</h3>
+			<p> 就像我们更早之前看到的 call 和 put。它创建另一个命令对象，告诉 middleware 等待一个特定的 action。 正如在 call Effect 的情况中，middleware 会暂停 Generator，直到返回的 Promise 被 resolve。 在 take 的情况中，它将会暂停 Generator 直到一个匹配的 action 被发起了。 在以上的例子中，watchAndLog 处于暂停状态，直到任意的一个 action 被发起。
+
+注意，我们运行了一个无限循环的 while(true)。记住这是一个 Generator 函数，它不具备 从运行至完成 的行为（run-to-completion behavior）。 Generator 将在每次迭代阻塞以等待 action 发起。
+
+使用 take 组织代码有一个小问题。在 takeEvery 的情况中，被调用的任务无法控制何时被调用， 它们将在每次 action 被匹配时一遍又一遍地被调用。并且它们也无法控制何时停止监听。
+
+而在 take 的情况中，控制恰恰相反。与 action 被 推向（pushed） 任务处理函数不同，Saga 是自己主动 拉取（pulling） action 的。 看起来就像是 Saga 在执行一个普通的函数调用 action = getNextAction()，这个函数将在 action 被发起时 resolve。
+
+这样的反向控制让我们可以使用传统的 push 方法实现不同的控制流程。</p>
+
+       <p> $.ajax({
+			url:"",
+			type: 'get',
+			dataType: 'jsonp',
+			
+	   })</p>
+
+
+        </div>
+    </div>
+
+
+</body>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+
+
+<script>
+ 
+
+
+
+
+</script>
+
+<script>
+
+    $(document).ready(function(){
+    var min_height = 100;
+    $(window).scroll(function(){
+        console.log($(window).scrollTop());
+    })   
+    });
+
+
+
+</script>
+
+</html>
+
+
+
+

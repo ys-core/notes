@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <style>
+*{
+	margin:0;
+	padding:0;
+	border:0;
+}
+               .header {
+			width: 100%;
+			height: 30px;
+			background: red;
+		}
+
+		.content {
+			overflow: hidden;
+			padding: 0 100px;
+		}
+
+		.footer {
+			width: 100%;
+			height: 30px;
+			background: red;
+		}
+
+		.middle {			
+			width: 100%;
+			height: 80px;
+			background: green;
+		}
+
+		.left {
+			width: 100px;
+			float: left;
+			position: relative;
+			left: -100px;
+			margin-left:500px;
+			height: 200px;
+			background: blue;
+		}
+
+		.right {			
+			width: 100px;
+			float: left;
+			height: 180px;
+			background: pink
+		}
+
+
+
+    </style>
+
+
+</head>
+<body>
+
+    <div class="header"></div>
+    <div class="content">
+		<div class="middle"></div>
+		<div class="left"></div>
+		<div class="right"></div>
+	</div>
+	<div class="footer"></div>
+
+
+
+
+</body>
+
+
+<script>
+    // undefined转为数值为NaN,null转为数值为0
+    // 原型式继承与es5中的Object.create()传入一个参数时的效果一样
+    // 防抖，在事件触发后n秒再执行回调，若再n秒内又触发了该事件，则重新计时
+    // 节流，规定一个单位时间，在这个单位时间内，只能有一次触发事件的回调函数执行，如果在同一个单位时间内某事件被触发多次，只有一次能生效
+    // setTimeout()会把一个函数放入到任务队列，然后走一个event loop，
+    // 父元素计算高度时，不会将浮动元素的高度计算进去，所以可以考虑BFC   
+    // 要使得单个元素使用margin:auto 在垂直方向上能够居中，需使该元素处在FFC,GFC上下文中   
+
+// function cal(){
+//     console.log(arguments);
+//     console.log(Array.from(arguments));
+//      return Array.from(arguments).reduce((count,cV,cI) => count + cV * cV,0);
+// }
+
+// // cal(2,3,4);
+// console.log(cal(2,3,4));
+
+
+// sayName('world');
+// sayAge(10);
+// function sayName(name){
+//   console.log('hello ', name);
+// }
+// var sayAge = function(age){
+//   console.log(age);
+// };
+
+
+// var arr = [3, 4, 6]
+// function squireArr( arr ){
+//     arr.forEach((element,index,arr) => {
+//         arr[index] = arr[index] * arr[index];
+//     });
+// }
+// squireArr(arr)
+// console.log(arr)  //-->[9, 16, 36]
+
+// let newArr = arr.map(Math.sqrt);
+// console.log(newArr);
+
+
+var company = {
+name: 'qdywxs',
+age: 3,
+sex: '男'
+}
+
+Object.keys(company).forEach(key => {
+console.log(key,company[key]);
+})
+
+Object.getOwnPropertyNames(company).forEach(key => {
+console.log(key,company[key]);
+})
+
+
+
+var fnArr = [];
+for (var i = 0; i < 10; i ++) {
+ ((arg) => {
+     fnArr[i] = () => arg;
+ })(i);
+}
+console.log(fnArr[3]());
+
+let a = new Proxy({},{
+    i:1,
+    get: function(){
+        return () => this.i++;
+    }
+});
+
+console.log(a == 1 && a == 2 && a == 3);
+
+
+function sayHello(name,age){
+
+    console.log([].slice.call(arguments));
+    console.log([].shift.call(arguments));
+}
+sayHello("Mingming~",25);
+
+console.log(sayHello);
+
+</script>
+
+<script>
+
+    $(document).ready(function(){
+    var min_height = 100;
+    $(window).scroll(function(){
+        console.log($(window).scrollTop());
+    })   
+    });
+
+
+
+</script>
+
+</html>
+
+
+
+

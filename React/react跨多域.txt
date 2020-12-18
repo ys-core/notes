@@ -1,0 +1,38 @@
+
+
+在React项目中需要跨多个域时，可以使用http-proxy-middleware插件，方法如下：
+
+1. 安装插件
+
+	npm install http-proxy-middleware 或者yarn add http-proxy-middleware
+
+2.在src目录下创建文件setupProxy.js文件
+
+	const proxy = require('http-proxy-middleware');
+	 
+	module.exports = function(app) {
+	  app.use(proxy('/api', {
+		target: 'http://172.16.0.234:8884/'
+	  }));
+	  app.use(proxy('/gpu_data', {
+		target: 'http://10.23.27.134:8885',    // 目标服务器 host
+		secure: false,
+		changeOrigin: true,                         //是否需要改变原始主机头为目标URL默认false，
+	   }));
+	}
+
+3.  接口代理
+
+	export function getOrder( data) {
+	  return fetch({
+		url: '/api/getOrder',          // 实际请求地址 http://172.16.0.234:8884/api/getOrder
+		method: 'post',
+		data,
+	  })
+	}
+	export function getGpuList( params) {
+	  return axios.get('/gpu_data/list',params)     // 实际请求地址 http://10.23.27.134:8885/list
+	}
+
+
+

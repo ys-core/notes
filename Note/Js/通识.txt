@@ -1,0 +1,20 @@
+
+
+	componentWillRecievedProps�����������ʱ��ִ��
+
+	addEventListener
+	removeEventListenr
+	this.refs.btn1.addEventListener('click', e => {
+
+	 })
+
+debounce: �����������¼�������n���ִ�лص�,�������n�����ֱ�����,�����¼�ʱ
+
+const debounce = (fn,delay)=>{
+	let timer = null;
+	return (...args)=>{
+
+	}
+}
+
+throttle: �����������涨��һ��ʱ����,ֻ�ܴ���һ�κ���,�������һ��ʱ�䰴�ڴ�����κ�����ֻ��һ����Ч

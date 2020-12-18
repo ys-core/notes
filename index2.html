@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <style>
+ html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .outer {
+            height: 100%;
+            padding: 8rem 0 0;
+            box-sizing: border-box;
+        }
+
+        h3 {
+            margin: 0;
+            padding: 0;
+        }
+
+        .head {
+            background-color: antiquewhite;
+            height: 8rem;
+            line-height: 8rem;
+            text-align: center;
+            margin-top:-8rem;
+        }
+
+        .container {
+            display: flex;
+            height: 100%;
+        }
+
+        .left {
+            background-color: aqua;
+            flex: 2;
+            text-align: center;
+        }
+
+        .main {
+            background-color: blueviolet;
+            flex: 8;
+            text-align: center;
+        }
+
+    </style>
+
+
+</head>
+<body>
+<div id="app" class="outer">
+        <h3 class="head">Head组件</h3>
+        <div class="container">
+            <h3 class="left">Left组件</h3>
+            <h3 class="main">Main组件</h3>
+        </div>
+    </div>
+
+
+</body>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+
+
+<script>
+    // undefined转为数值为NaN,null转为数值为0
+    // 原型式继承与es5中的Object.create()传入一个参数时的效果一样
+    // 防抖，在事件触发后n秒再执行回调，若再n秒内又触发了该事件，则重新计时
+    // 节流，规定一个单位时间，在这个单位时间内，只能有一次触发事件的回调函数执行，如果在同一个单位时间内某事件被触发多次，只有一次能生效
+    // setTimeout()会把一个函数放入到任务队列，然后走一个event loop，
+    // 父元素计算高度时，不会将浮动元素的高度计算进去，所以可以考虑BFC   
+    // 要使得单个元素使用margin:auto 在垂直方向上能够居中，需使该元素处在FFC,GFC上下文中   
+
+// function cal(){
+//     console.log(arguments);
+//     console.log(Array.from(arguments));
+//      return Array.from(arguments).reduce((count,cV,cI) => count + cV * cV,0);
+// }
+
+// // cal(2,3,4);
+// console.log(cal(2,3,4));
+
+
+// sayName('world');
+// sayAge(10);
+// function sayName(name){
+//   console.log('hello ', name);
+// }
+// var sayAge = function(age){
+//   console.log(age);
+// };
+
+
+// var arr = [3, 4, 6]
+// function squireArr( arr ){
+//     arr.forEach((element,index,arr) => {
+//         arr[index] = arr[index] * arr[index];
+//     });
+// }
+// squireArr(arr)
+// console.log(arr)  //-->[9, 16, 36]
+
+// let newArr = arr.map(Math.sqrt);
+// console.log(newArr);
+
+
+var company = {
+name: 'qdywxs',
+age: 3,
+sex: '男'
+}
+
+Object.keys(company).forEach(key => {
+console.log(key,company[key]);
+})
+
+Object.getOwnPropertyNames(company).forEach(key => {
+console.log(key,company[key]);
+})
+
+
+
+var fnArr = [];
+for (var i = 0; i < 10; i ++) {
+ ((arg) => {
+     fnArr[i] = () => arg;
+ })(i);
+}
+console.log(fnArr[3]());
+
+let a = new Proxy({},{
+    i:1,
+    get: function(){
+        return () => this.i++;
+    }
+});
+
+console.log(a == 1 && a == 2 && a == 3);
+
+
+function sayHello(name,age){
+
+    console.log([].slice.call(arguments));
+    console.log([].shift.call(arguments));
+}
+sayHello("Mingming~",25);
+
+console.log(sayHello);
+
+</script>
+
+<script>
+
+    $(document).ready(function(){
+    var min_height = 100;
+    $(window).scroll(function(){
+        console.log($(window).scrollTop());
+    })   
+    });
+
+
+
+</script>
+
+</html>
+
+
+
+
