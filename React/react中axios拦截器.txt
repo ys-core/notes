@@ -1,0 +1,52 @@
+
+
+登录获取token后，如何对后面的接口统一在请求头header里面设置token，让后面的请求header都带有token？
+
+axios拦截器（interceptor）
+作用：当一个请求发出的时候，会先流过 interceptors 的 request 部分，接着请求会发出，当接受到响应时，会先流过 interceptors 的 response 部分，最后返回。在请求或响应被 then 或 catch 处理前拦截它们。
+
+	// 添加请求拦截器
+	axios.interceptors.request.use(function (config) {
+		// 在发送请求之前做些什么
+		 //这里经常搭配token使用
+		let token = sessionStorage.getItem("token");
+		config.headers.Authorization = token; //将token放到请求头发给服务器
+		return config;
+	}, function (error) {
+		// 对请求错误做些什么
+		console.log("对请求错误做些什么");
+		return Promise.reject(error);
+	});
+
+	// 添加响应拦截器
+	axios.interceptors.response.use(function (response) {
+		// 对响应数据做点什么
+		let token = sessionStorage.getItem("token");
+		return response;
+	}, function (error) {
+		// 对响应错误做点什么
+		return Promise.reject(error);
+	});
+
+-----------------------------------------------------------------------------------------------------------
+关于登录后的token获取。
+
+ reqLogin(name,password).then(response => {
+ 				//获取
+	let token = response.data.data.token;
+	console.log("token="+token);
+	console.log('成功了', response.data);
+	//保存
+	window.sessionStorage.setItem("token",token);
+	const setAuthToken = token => {
+		console.log(token);
+		if(token){
+			axios.defaults.headers.common["token"] = token;   
+		}else{
+			delete axios.defaults.headers.common["token"];
+		}
+	}
+	setAuthToken(token));
+
+
+
