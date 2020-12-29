@@ -1,0 +1,10 @@
+
+
+
+	
+
+
+动画：
+
+	1. 滚动动画 react-animate-on-scroll,  内容由下边界进入后才开始展现动画   https://dbramwell.github.io/react-animate-on-scroll/#home
+	2.react-reveal, 官网https://www.react-reveal.com/
