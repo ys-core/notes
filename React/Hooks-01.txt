@@ -1,0 +1,61 @@
+
+
+1.在function hook任意一次渲染中,props和state是始终保持不变的,如果props和state在任一不同渲染中是相互独立的话,那么使用到他们的任何值也是独立的,如下面的代码中handleAletClick处理的事件
+
+import React,{ useState } from 'react'
+
+const LikeButton = () =>{
+	const [like,setlike] = useState(1)
+	const [ON, setON] = useState(false)
+	
+	const handleAlertClick = () => {
+	    setTimeout(()=>{
+	         alert(`you clicked ${like} times`);
+	    }, 2000);
+	return(
+	  <div>
+	      <button onClick={() => setlike(like + 1)}>点赞{like}</button>
+	      <button onClick={handleAlertClick}>Alert</button>
+	  </div>
+	)
+	}
+}
+
+export default LikeButton
+
+2.那么有可能让不同的组件渲染之间发生某种联系呢？ 有, useRef
+
+useRef很重要的一点就是它的current属性,useRef返回一个可变的ref对象,其.current属性被初始化为出入的初始值(initialValue),返回的ref对象在组件的整个生命周期内保持不该，
+所以ref在所有render都保持着唯一的引用,因此所有的对ref的赋值或者取值拿到的都是一个最终的状态，而不会存在隔离	
+
+修改ref的值不会触发组件的重新渲染
+
+
+
+
+
+3.  createRef和useRef的区别
+
+import  { useRef } from 'react'
+
+const FocusInput = () =>{
+	const inputElement = createRef();   // const inputElement = useRef();
+	const handleFocusInput = () => {
+		inputElement.currrent.focus()
+	}
+	return (
+	    <>
+		<input ref={inputElement} type="text" />
+		<button onClick={handleFocusInput}>Focus Input </button>
+	    </>
+	)
+
+}
+
+createRef每次宣言都会返回一个新的引用,而useRef每次都会返回相同的引用
+
+
+
+
+
+

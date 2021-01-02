@@ -1,0 +1,281 @@
+
+
+useState: 较简单,不需多说了
+
+	import React, { useState, useEffect } from 'react';
+
+	function Example() {
+	  const [count, setCount] = useState(0);
+
+
+
+useEffect:     可以把 useEffect Hook 看做 componentDidMount,componentDidUpdate 和 componentWillUnmount 这三个函数的组合
+	常见有两种副作用,一种是需要清除的,一种是不需要清除的
+
+	1.不需要清除的effect, 如第一次render()完成后及更新完成后需要执行的
+
+		import React, { useState, useEffect } from 'react';
+
+		function Example() {
+		  const [count, setCount] = useState(0);
+
+		  useEffect(() => {
+			document.title = `You clicked ${count} times`;
+		  });
+
+		  return (
+			<div>
+			  <p>You clicked {count} times</p>
+			  <button onClick={() => setCount(count + 1)}>
+				Click me
+			  </button>
+			</div>
+		  );
+		}
+
+	2.需要清除的effect
+
+		还有一些副作用是需要清除的。例如订阅外部数据源。这种情况下，清除工作是非常重要的，可以防止引起内存泄露！
+
+
+        如果你的effect返回的是一个函数,React将会在执行清除操作时调用它,即组件卸载的时候去执行清除函数
+
+		import React, { useState, useEffect } from 'react';
+
+		function FriendStatus(props) {
+		  const [isOnline, setIsOnline] = useState(null);
+
+		  useEffect(() => {
+			function handleStatusChange(status) {
+			  setIsOnline(status.isOnline);
+			}
+			ChatAPI.subscribeToFriendStatus(props.friend.id, handleStatusChange);
+			// Specify how to clean up after this effect:
+			return function cleanup() {
+			  ChatAPI.unsubscribeFromFriendStatus(props.friend.id, handleStatusChange);
+			};
+		  });
+
+		  if (isOnline === null) {
+			return 'Loading...';
+		  }
+		  return isOnline ? 'Online' : 'Offline';
+		}
+
+
+
+		使用Hook其中的一个目的就是要解决class中生命周期函数经常包含不相关的逻辑,但又把相关逻辑分离到了几个不同方法中的问题
+
+		可以像使用多个state的Hook一样,你也可以使用多个effect,这样就可以把不相关逻辑分离到不同的effect中去
+		function FriendStatusWithCounter(props) {
+		  const [count, setCount] = useState(0);
+		  useEffect(() => {
+			document.title = `You clicked ${count} times`;
+		  });
+
+		  const [isOnline, setIsOnline] = useState(null);
+		  useEffect(() => {
+			function handleStatusChange(status) {
+			  setIsOnline(status.isOnline);
+			}
+
+			ChatAPI.subscribeToFriendStatus(props.friend.id, handleStatusChange);
+			return () => {
+			  ChatAPI.unsubscribeFromFriendStatus(props.friend.id, handleStatusChange);
+			};
+		  });
+		  // ...
+		}
+		
+		Hook允许我们按照代码的用途分离他们,而不是像生命周期函数那样,React将按照effect申明的而顺序依次调用组件中的每一个effect
+
+
+		提示:通过跳过Effect进行性能优化
+		在某些情况下,每次渲染后都执行清理或者执行effect可能会导致性能问题,在class组件中可以通过在componentDidUpdate中对prevProps或者prevState的比较进行逻辑解决
+		componentDidUpdate(prevProps, prevState) {
+		  if (prevState.count !== this.state.count) {
+			document.title = `You clicked ${this.state.count} times`;
+		  }
+		}
+		
+
+在useEffect的Hook 	
+		API中,如果某些特定值在两次重渲染之间没有发生变化,可以通知React跳过对effect的调用,只要传递数组作为useEffect的第二个可选参数即可
+
+		useEffect(() => {
+		  document.title = `You clicked ${count} times`;
+		}, [count]); // 仅在 count 更改时更新
+
+		如果想执行只运行一次的 effect（仅在组件挂载和卸载时执行），可以传递一个空数组（[]）作为第二个参数。
+		这就告诉 React 你的 effect 不依赖于 props 或 state 中的任何值，所以它永远都不需要重复执行。这并不属于特殊情况 —— 它依然遵循依赖数组的工作方式。
+
+
+
+Hook规则
+
+		1.只在最顶层使用Hook,不要在循环,条件或嵌套函数中调用Hook,目的是确保Hook在每一次渲染中都按照同样的顺序被调用,这让React能够在多次的useState和useEffect调用之间保持hook状态的正确
+
+		2.只在React函数中调用Hook,不要在普通的JavaScript函数中调用Hook
+
+
+		自定义Hook：必须以use开头,这个约定非常重要,不遵循的话无法判断某个函数是否包含对其内部Hook的调用,React将据此检查是否遵循Hook的规则
+
+
+
+useContext: 
+
+    当组件上层最近的Provider更新时,该Hook会触发重渲染,并使用最新传递给provider的contextvalue值,即使祖先使用React.memo或者shouldComponentUpdate,也会在组件本身使用useContext时重新渲染
+
+	const themes = {
+	  light: {
+		foreground: "#000000",
+		background: "#00ff00"
+	  },
+	  dark: {
+		foreground: "#ffffff",
+		background: "#ff0000"
+	  }
+	};
+
+	const ThemeContext = React.createContext(themes.dark);
+
+	function App() {
+	  return (
+		<ThemeContext.Provider value={themes.light}>
+		  <Toolbar />
+		</ThemeContext.Provider>
+	  );
+	}
+
+	function Toolbar(props) {
+	  return (
+		<div>
+		  <ThemedButton />
+		</div>
+	  );
+	}
+
+	function ThemedButton() {
+	  const theme = useContext(ThemeContext);
+	  return (
+		<button style={{ background: theme.background, color: theme.foreground }}>
+		  I am styled by theme context!
+		</button>
+	  );
+	}
+	export default App;
+
+
+
+
+
+
+useReducer:
+
+const [state, dispatch] = useReducer(reducer, initialArg, init);
+
+const initialState = {count: 0};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'increment':
+      return {count: state.count + 1};
+    case 'decrement':
+      return {count: state.count - 1};
+    default:
+      throw new Error();
+  }
+}
+
+function Counter() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  return (
+    <>
+      Count: {state.count}
+      <button onClick={() => dispatch({type: 'decrement'})}>-</button>
+      <button onClick={() => dispatch({type: 'increment'})}>+</button>
+    </>
+  );
+}
+
+惰性初始化
+
+
+你可以选择惰性地创建初始 state。为此，需要将 init 函数作为 useReducer 的第三个参数传入，这样初始 state 将被设置为 init(initialArg)。
+
+这么做可以将用于计算 state 的逻辑提取到 reducer 外部，这也为将来对重置 state 的 action 做处理提供了便利：
+
+
+
+import React, { useEffect, useReducer , useRef } from 'react'
+
+
+const initialState = {count: 0};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'increment':
+      return {count: state.count + 11};
+    case 'decrement':
+      return {count: state.count - 21};
+    default:
+      throw new Error();
+  }.
+}
+
+function Counter() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const prevCountRef = useRef();
+  useEffect(() => {
+      prevCountRef.current = state.count
+      console.log(prevCountRef.current);
+  })
+  const prevCount = prevCountRef.current;
+
+  return (
+    <>
+      Count Now: {state.count}
+      Count Before: { prevCount }<hr/>
+      <button onClick={() => dispatch({type: 'decrement'})}>-</button>
+      <button onClick={() => dispatch({type: 'increment'})}>+</button><hr />
+    </>
+  );
+}
+
+
+export default Counter
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
