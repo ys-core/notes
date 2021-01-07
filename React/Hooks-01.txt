@@ -55,6 +55,113 @@ const FocusInput = () =>{
 createRef每次宣言都会返回一个新的引用,而useRef每次都会返回相同的引用
 
 
+4. useCallback
+
+    const memoizedCallback = useCallback(
+        () => {
+            doSomething(a, b);
+        },
+        [a, b],
+    );
+    // 返回的memoizedCallback只有当a、b发生变化时才会变化，可以把这样一个memoizedCallback作为dependency数组的内容给useEffect
+
+我们来看一个useEffect的dependency数组含有函数的情况：
+    function Counter() {
+        const [count, setCount] = useState(0);
+        const [a, setA] = useState(100);
+
+        const fn = useCallback(() => {
+            console.log('callback', a)
+        }, [a])
+        // 可知fn是依赖于a的，只有当a发生变化的时候fn才会变化，否则每轮render的fn都是同一个
+
+        const f1 = () => {
+            console.log('f1')
+        }
+        // 对于f1，每轮循环都有独自的f1，所以相当于一直在变化，如果useEffect依赖于f1的话，每次render之后都会执行
+
+        useEffect(() => {
+            console.log('this is effect')
+        }, [f1])
+        // 当dependency数组里面是f1时，不管更新count还是a，都会执行里面的函数，打印出this is effect
+        // 当dependency数组里面是fn时，只有更新a时才会执行该函数
+        return (
+            <>
+                Count: {count}
+                <button onClick={() => setCount(count + 1)}>+</button>
+                <button onClick={() => setCount(count - 1)}>-</button>
+                <br />
+                <button onClick={() => setA(a + 1)}>+</button>
+                <button onClick={() => setA(a - 1)}>-</button>
+            </>
+        );
+    }
+----------------------------------------------------------------------------------------------------
+  function SearchResults() {
+        const [query, setQuery] = useState('react');
+
+        // ✅ Preserves identity until query changes
+        const getFetchUrl = useCallback(() => {
+            return 'https://hn.algolia.com/api/v1/search?query=' + query;
+        }, [query]);  // ✅ Callback deps are OK
+        // 只有当query发生变化的时候getFetchUrl才会变化
+        useEffect(() => {
+            const url = getFetchUrl();
+            // ... Fetch data and do something ...
+        }, [getFetchUrl]); // ✅ Effect deps are OK
+
+        // ...
+    }
+
+useCallback本质上是添加了一层依赖检查,是函数本身只在需要的时候才改变,而不是去掉对函数的依赖,
+
+
+5.useEffect竟态
+
+
+我们开发页面的时候，经常遇见这种问题，随着用户的频繁交互导致较短时间内多次请求同一个接口，因为接口返回的时间不一样，如果我们不加处理，
+导致页面上显示的是返回最慢的接口数据（但不是最后一次发起请求的数据）解决这个问题有好多种方案，可以建一个队列，按照入队的顺序执行回调。
+或者用redux-saga的
+
+如何解决这个问题
+
+useEffect(() => {
+    let isSubscribe = true;
+    fetchData(args).then(ret => {
+      if (isSubscribe) {
+        setData(ret);
+      }
+    })
+    return () => {
+      isSubscribe = false;
+    }
+}, [args]);
+
+
+进一步封装成一个hook
+
+const useLatest = (fn, dependencies) => {
+  useEffect(() => {
+    let state = { isSubscribe: true };
+    fn(state);
+    return () => {
+      state.isSubscribe = false;
+    }
+  }, dependencies);
+}
+
+useLatest(({isSubscribe}) => fetchData(args).then(ret => {
+  if (isSubscribe) {
+    setData(ret);
+  }
+}), [args])
+
+
+
+
+
+
+
 
 
 
