@@ -1,0 +1,292 @@
+
+Flutter开发中常用的基础组件
+
+
+
+1.  Text 文本组件
+
+const Text(
+  this.data, {
+  Key key,
+  this.style,
+  this.textAlign,
+  this.softWrap,
+  this.overflow,
+  this.maxLines,
+})
+
+//eg:
+Text(
+  '这是测试文本',
+  style: TextStyle(
+    fontSize: 13,
+    fontWeight: FontWeight.bold,
+    color: Color(0xFF999999),
+  ),
+)
+
+一段文本中可能有好几段样式，使用Text.rich和TextSpan
+Text.rich(TextSpan(
+  children: [
+    TextSpan(
+      '￥',
+      style: TextStyle(
+        fontSize: 12,
+        color: Color(0xFFFF7528),
+      ),
+    ),
+    TextSpan(
+      '258',
+      style: TextStyle(
+        fontSize: 15,
+        color: Color(0xFFFF7528),
+      ),
+    ),
+  ]
+))
+
+
+
+2.  Image图片组件
+
+Image({
+  Key key,
+  @required this.image,
+  this.width,
+  this.height,
+  this.color,
+  this.fit,
+  this.repeat = ImageRepeat.noRepeat,
+})
+
+image: 图片源,常用到的主要有两种 AssetImage和NetworkImage,在使用AssetImage之前,需要在pubspec.yaml文件中申明资源文件,然后才能使用,
+而NetworkImage指定土拍你的网络地址即可,主要是在加载一些网络图片时会用到
+
+fit:  当希望图片根据容器大小进行适配而不是指定固定的宽高时,可以通过该属性来实现,其可选值有BoxFit的fill,contain,cover,fitWidth,fitHeight,none和scaleDown
+
+repeat:  决定当前图片实际大小不足指定大小时是否使用重复效果
+
+另外Flutter还提供了Image.network和Image.asset构造函数语法糖,如下方代码的意思一样
+Image(
+  image: NetworkImage('https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1402367109,4157195964&fm=27&gp=0.jpg'),
+  width: 100,
+  height: 100,
+)
+
+Image.network(
+  'https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1402367109,4157195964&fm=27&gp=0.jpg',
+  width: 100,
+  height: 100,
+)
+
+
+3.  Icon   Icon图标组件相比于土坯那有着放大不会失真的优势,Flutter提供了一套内置的Material风格的图标
+const Icon(
+  this.icon, {
+  Key key,
+  this.size,
+  this.color,
+})
+
+//eg:
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+          size: 25,
+        ),
+
+
+
+4. Button    RaisedButton/FlatButton/IconButton/OutlineButton
+
+RaisedButton.icon(
+  icon: Icon(Icons.send),
+  label: Text("发送"),
+  onPressed: _onPressed,
+),
+OutlineButton.icon(
+  icon: Icon(Icons.add),
+  label: Text("添加"),
+  onPressed: _onPressed,
+),
+FlatButton.icon(
+  icon: Icon(Icons.info),
+  label: Text("详情"),
+  onPressed: _onPressed,
+),
+
+
+
+5. Switch/Checkbox    单选开关/复选框   虽然都继承自StatefulWidget, 但它们本身不会保存当前状态,选中状态都是父组件来管理的,当Switch或Checkbox被点击时, 
+会触发它们的onChanged回调, 我们可以在此回调中处理选中状态改变逻辑
+
+class SwitchAndCheckBoxTestRoute extends StatefulWidget {
+  @override
+  _SwitchAndCheckBoxTestRouteState createState() => new _SwitchAndCheckBoxTestRouteState();
+}
+
+class _SwitchAndCheckBoxTestRouteState extends State<SwitchAndCheckBoxTestRoute> {
+  bool _switchSelected=true; //维护单选开关状态
+  bool _checkboxSelected=true;//维护复选框状态
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        Switch(
+          value: _switchSelected,//当前状态
+          onChanged:(value){
+            //重新构建页面  
+            setState(() {
+              _switchSelected=value;
+            });
+          },
+        ),
+        Checkbox(
+          value: _checkboxSelected,
+          activeColor: Colors.red, //选中时的颜色
+          onChanged:(value){
+            setState(() {
+              _checkboxSelected=value;
+            });
+          } ,
+        )
+      ],
+    );
+  }
+}
+
+
+
+6. TextField/Form   输入框/表单
+
+1>
+const TextField({
+  ...
+  TextEditingController controller, 
+  FocusNode focusNode,
+  InputDecoration decoration = const InputDecoration(),
+  TextInputType keyboardType,
+  TextInputAction textInputAction,
+  TextStyle style,
+  TextAlign textAlign = TextAlign.start,
+  bool autofocus = false,
+  bool obscureText = false,
+  int maxLines = 1,
+  int maxLength,
+  bool maxLengthEnforced = true,
+  ValueChanged<String> onChanged,
+  VoidCallback onEditingComplete,
+  ValueChanged<String> onSubmitted,
+  List<TextInputFormatter> inputFormatters,
+  bool enabled,
+  this.cursorWidth = 2.0,
+  this.cursorRadius,
+  this.cursorColor,
+  ...
+})
+
+
+
+
+
+2> TextFormField  / TextFormState
+
+
+
+
+7. LinearProgressIndicator / CirculaarProgressIndicator   进度指示器
+
+1>LinearProgressIndicator 
+LinearProgressIndicator({
+  double value,     // 表示当前进度, [0,1], 为null时会执行一个循环动画(模糊进度),不为null为一个具体进度的进度条
+  Color backgroundColor,
+  Animation<Color> valueColor,  // 进度条颜色, 值类型为Animation<Color>
+  ...
+})
+
+// 模糊进度条(会执行一个动画)
+LinearProgressIndicator(
+  backgroundColor: Colors.grey[200],
+  valueColor: AlwaysStoppedAnimation(Colors.blue),
+),
+//进度条显示50%
+LinearProgressIndicator(
+  backgroundColor: Colors.grey[200],
+  valueColor: AlwaysStoppedAnimation(Colors.blue),
+  value: .5, 
+)
+
+
+2> CirculaarProgressIndicator
+
+CircularProgressIndicator({
+  double value,
+  Color backgroundColor,
+  Animation<Color> valueColor,
+  this.strokeWidth = 4.0,   // 圆形进度条的粗细
+  ...   
+})
+
+// 模糊进度条(会执行一个旋转动画)
+CircularProgressIndicator(
+  backgroundColor: Colors.grey[200],
+  valueColor: AlwaysStoppedAnimation(Colors.blue),
+),
+//进度条显示50%，会显示一个半圆
+CircularProgressIndicator(
+  backgroundColor: Colors.grey[200],
+  valueColor: AlwaysStoppedAnimation(Colors.blue),
+  value: .5,
+),
+
+
+发现并没有提供进度条尺寸的参数, 其实都是去父容器的尺寸作为绘制的边界的, 因此可以通过尺寸限制类Widget, 如ConstrainedBox、SizedBox来指定尺寸
+
+
+// 线性进度条高度指定为3
+SizedBox(
+  height: 3,
+  child: LinearProgressIndicator(
+    backgroundColor: Colors.grey[200],
+    valueColor: AlwaysStoppedAnimation(Colors.blue),
+    value: .5,
+  ),
+),
+// 圆形进度条直径指定为100
+SizedBox(
+  height: 100,
+  width: 100,
+  child: CircularProgressIndicator(
+    backgroundColor: Colors.grey[200],
+    valueColor: AlwaysStoppedAnimation(Colors.blue),
+    value: .7,
+  ),
+),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
