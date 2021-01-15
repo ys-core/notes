@@ -1,0 +1,155 @@
+
+布局类组件:  
+
+        布局类组件都会包含一个或多个子组件,不同的布局类组件对子组件排版(layout)方式不同。Element树才是最终的绘制树, Element树是通过Widget树来创建的( 
+通过Widget.createElement()),Widget其实就是Element的配置数据。
+
+
+
+
+
+1.  Row/Column(行/列组件)   Row组件是横向, Co'lumn组件时纵向
+
+    构造函数如下:
+Row({
+  Key key,
+  MainAxisAlignment mainAxisAlignment = MainAxisAlignment.start,
+  CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.center,
+  MainAxisSize mainAxisSize = MainAxisSize.max,
+  List<Widget> children = const <Widget>[],
+})
+
+Column({
+  Key key,
+  MainAxisAlignment mainAxisAlignment = MainAxisAlignment.start,
+  CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.center,
+  MainAxisSize mainAxisSize = MainAxisSize.max,
+  List<Widget> children = const <Widget>[],
+})
+
+特别注意: 1> 由于Column组件次轴方向上（即水平）默认是居中对齐，所以水平方向上不会撑满其父容器，此时需要指定CrossAxisAlignment.stretch才可以
+                  2> 当Row里面嵌套Row，或者Column里面再嵌套Column，那么只有最外面的Row或Column会占用尽可能大的空间，里面Row或Column所占用的空间为实际大小，
+	        如果要让内层的Column/Row占满外层Column/Row, 可以使用Expanded组件
+
+
+2. Flex  弹性布局
+
+      弹性布局允许子组件按照一定比例来分配父容器空间。如H5中的弹性盒子布局，Android中的FlexboxLayout等。Flutter中的弹性布局主要通过Flex和Expanded来配合实现。
+
+      Flex组件可以沿着水平或垂直方向排列子组件，如果你知道主轴方向，使用Row或Column会方便一些，因为Row和Column都继承自Flex，参数基本相同，所以能使用Flex的
+地方基本上都可以使用Row或Column。Flex本身功能是很强大的，它也可以和Expanded组件配合实现弹性布局。
+
+Flex({
+  ...
+  @required this.direction, //弹性布局的方向, Row默认为水平方向，Column默认为垂直方向
+  List<Widget> children = const <Widget>[],
+})
+
+
+Expanded   可以按比例扩伸 Row、Column、Flex子组件所占用的空间
+sss
+const Expanded({
+  int flex = 1,     // 为0/null时,则child是没有弹性的，不会被伸展占用的空间,＞0时,所有的Expanded按照其flex的比例来分割主轴的全部剩余空间,
+  @required Widget child,
+})
+
+//eg:
+
+class FlexLayoutTestRoute extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        //Flex的两个子widget按1：2来占据水平空间  
+        Flex(
+          direction: Axis.horizontal,
+          children: <Widget>[
+            Expanded(
+              flex: 1,
+              child: Container(
+                height: 30.0,
+                color: Colors.red,
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Container(
+                height: 30.0,
+                color: Colors.green,
+              ),
+            ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 20.0),
+          child: SizedBox(
+            height: 100.0,
+            //Flex的三个子widget，在垂直方向按2：1：1来占用100像素的空间  
+            child: Flex(
+              direction: Axis.vertical,
+              children: <Widget>[
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    height: 30.0,
+                    color: Colors.red,
+                  ),
+                ),
+                Spacer(
+                  flex: 1,
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    height: 30.0,
+                    color: Colors.green,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+
+
+
+
+
+
+
+3.   Stack/Positioned(绝对定位布局组件)  搭配使用, Stack是绝对定位的容器, Positioned组件通过left,top,right,bottom四个方向上的属性值来决定其在父容器中的位置
+
+Container(
+  height: 100,
+  color: Colors.yellow,
+  child: Stack(
+    children: <Widget>[
+      Positioned(
+        left: 10,
+        top: 10,
+        child: Container(width: 10, height: 10, color: Colors.red),
+      ),
+      Positioned(
+        right: 10,
+        top: 10,
+        child: Container(width: 10, height: 10, color: Colors.red),
+      ),
+      Positioned(
+        left: 10,
+        bottom: 10,
+        child: Container(width: 10, height: 10, color: Colors.red),
+      ),
+      Positioned(
+        right: 10,
+        bottom: 10,
+        child: Container(width: 10, height: 10, color: Colors.red),
+      ),
+    ],
+  ),
+)
+
+
