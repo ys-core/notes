@@ -115,14 +115,107 @@ class FlexLayoutTestRoute extends StatelessWidget {
 }
 
 
+示例中的Spacer的功能时占用指定比例的空间,实际上它只是Expanded的一个包装类,源码如下
+
+class Spacer extends StatelessWidget {
+  const Spacer({Key key, this.flex = 1})
+    : assert(flex != null),
+      assert(flex > 0),
+      super(key: key);
+
+  final int flex;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      flex: flex,
+      child: const SizedBox.shrink(),
+    );
+  }
+}
+
+
+
+3. Wrap / Flow , 流式布局
+
+   在介绍Row和Column时, 如果子Widget超出屏幕范围,则会报溢出错误,Row默认只有一行,如果超出屏幕不会折行,我们把超出屏幕显示范围会自动折行的布局称为 流式布局 , Flutter通过Wrap和Flow来支持流式布局,
+
+Row(
+  children: <Widget>[
+    Text("xxx"*100)
+  ],
+);
+
+1> Wrap
+
+Wrap({
+  ...
+  this.direction = Axis.horizontal,
+  this.alignment = WrapAlignment.start,
+  this.spacing = 0.0,
+  this.runAlignment = WrapAlignment.start,
+  this.runSpacing = 0.0,
+  this.crossAxisAlignment = WrapCrossAlignment.start,
+  this.textDirection,
+  this.verticalDirection = VerticalDirection.down,
+  List<Widget> children = const <Widget>[],
+})
+
+//eg:
+Wrap(
+  spacing: 8.0, // 主轴(水平)方向间距
+  runSpacing: 4.0, // 纵轴（垂直）方向间距
+  alignment: WrapAlignment.center, //沿主轴方向居中
+  children: <Widget>[
+    new Chip(
+      avatar: new CircleAvatar(backgroundColor: Colors.blue, child: Text('A')),
+      label: new Text('Hamilton'),
+    ),
+    new Chip(
+      avatar: new CircleAvatar(backgroundColor: Colors.blue, child: Text('M')),
+      label: new Text('Lafayette'),
+    ),
+    new Chip(
+      avatar: new CircleAvatar(backgroundColor: Colors.blue, child: Text('H')),
+      label: new Text('Mulligan'),
+    ),
+    new Chip(
+      avatar: new CircleAvatar(backgroundColor: Colors.blue, child: Text('J')),
+      label: new Text('Laurens'),
+    ),
+  ],
+)
+
+
+2> Flow   很少使用Flow,因其过于复杂,需要自己实现子widget的位置转换, 确实需要使用时再去查询
 
 
 
 
+4.   Stack/Positioned(绝对定位布局组件)  搭配使用, Stack是绝对定位的容器, Positioned组件通过left,top,right,bottom四个方向上的属性值来决定其在父容器中的位置,即Positioned组件可以根据距父容器四个角度
+来确定自身的位置
+
+Stack({
+  this.alignment = AlignmentDirectional.topStart,
+  this.textDirection,
+  this.fit = StackFit.loose,
+  this.overflow = Overflow.clip,
+  List<Widget> children = const <Widget>[],
+})
+
+const Positioned({
+  Key key,
+  this.left, 
+  this.top,
+  this.right,
+  this.bottom,
+  this.width,
+  this.height,
+  @required Widget child,
+})
 
 
-3.   Stack/Positioned(绝对定位布局组件)  搭配使用, Stack是绝对定位的容器, Positioned组件通过left,top,right,bottom四个方向上的属性值来决定其在父容器中的位置
-
+//eg:
 Container(
   height: 100,
   color: Colors.yellow,
@@ -151,5 +244,107 @@ Container(
     ],
   ),
 )
+
+//eg:  Stack中有未定位元素Container,如使用fit属性为StackFit.expand,那么未定位元素将占满整个父Stack空间
+
+Stack(
+  alignment:Alignment.center ,
+  fit: StackFit.expand, //未定位widget占满Stack整个空间
+  children: <Widget>[
+    Positioned(
+      left: 18.0,
+      child: Text("I am Jack"),
+    ),
+    Container(child: Text("Hello world",style: TextStyle(color: Colors.white)),
+      color: Colors.red,
+    ),
+    Positioned(
+      top: 18.0,
+      child: Text("Your friend"),
+    )
+  ],
+),
+
+
+
+5. Align 对齐与相对定位
+
+      通过Stack和Positioned，我们可以指定一个或多个子元素相对于父元素各个边的精确偏移，并且可以重叠。但如果只想简单调整一个子元素在父元素中的位置的话，使用Align组件会更简单。
+
+      Align组件可以调整子组件的位置,并且根据子组件的宽高来确定自身的宽高
+
+Align({
+  Key key,
+  this.alignment = Alignment.center,  // 子组件在父组件中的起始位置
+  this.widthFactor,   //缩放因子 根据子组件的size来确定自身宽高,如果widthFactor/heightFactor为null,则组建的宽高将会占用尽可能多的空间
+  this.heightFactor,
+  Widget child,
+})
+
+//eg:
+Container(
+  height: 120.0,
+  width: 120.0,
+  color: Colors.blue[50],
+  child: Align(
+    alignment: Alignment.topRight,
+    child: FlutterLogo(
+      size: 60,
+    ),
+  ),
+)
+上面显示制定了Container的宽高, 如果不显示指定，可以通过指定widthFactor和heightFactor的值达到同样效果
+
+
+//右上角
+static const Alignment topRight = Alignment(1.0, -1.0);
+
+Alignment继承自AlignmentGeometry, Alignment Widget会以矩形的中心点作为坐标原点, 即Alignment(0.0,0.0)
+
+
+
+
+Align和Stack的对比:
+
+       Align和Stack/Positioned都可以用于指定子元素相对父元素的偏移,区别如下:
+     1> 定位参考系统不同: Stack/Positioned定位的参考系是父容器矩形的四个顶点, 而Align则需要先通过alignment参数来确定坐标原点,不同的alignment会对应不同原点,最终的偏移是需要通过alignment的转换公式计算出来的
+     2>  Stack可以有多个子元素,并且子元素可以堆叠,而Align只能有一个子元素,不存在堆叠
+
+
+
+6.  Center 居中子元素
+
+class Center extends Align {
+  const Center({ Key key, double widthFactor, double heightFactor, Widget child })
+    : super(key: key, widthFactor: widthFactor, heightFactor: heightFactor, child: child);
+}
++
+Center继承自Align,只少了一个alignment参数,而Align的构造函数中alignment的值为Alignment.center,所以Center是对齐方式为Alignment.center的Align
+
+当widthFactor和heightFactor为null时组件的宽高会占用尽可能多的空间,所以有时需要指定为非空
+
+//eg:
+DecoratedBox(
+  decoration: BoxDecoration(color: Colors.red),
+  child: Center(
+    child: Text("xxx"),
+  ),
+),
+DecoratedBox(
+  decoration: BoxDecoration(color: Colors.red),
+  child: Center(
+    widthFactor: 1,
+    heightFactor: 1,
+    child: Text("xxx"),
+  ),
+)
+
+
+
+
+
+
+
+
 
 

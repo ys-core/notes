@@ -1,0 +1,108 @@
+
+Flutter开发中常用的基础组件
+
+
+
+1. Padding
+
+给其子节点添加填充(留白),和边距效果类似,
+Padding({
+  ...
+  EdgeInsetsGeometry padding,
+  Widget child,
+})
+
+
+2.尺寸限制类  ConstrainedBox / SizedBox /  UnconstrainedBox / AspectRatio
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1.  Container   可以认为是web开发中的div,rn开发中的View, 用来控制大小、背景、边框、阴影、内外边距、内容排列方式,
+	Container组件时单子节点组件,也就是只允许子节点有一个
+      构造函数如下
+
+Container({
+  Key key,
+  double width,
+  double height,
+  this.margin,
+  this.padding,
+  Color color,
+  this.alignment,
+  BoxConstraints constraints,
+  Decoration decoration,
+  this.foregroundDecoration,
+  this.transform,
+  this.child,
+})
+
+
+
+2.  Row/Column(行/列组件)   Row组件是横向, Co'lumn组件时纵向
+
+    构造函数如下:
+Row({
+  Key key,
+  MainAxisAlignment mainAxisAlignment = MainAxisAlignment.start,
+  CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.center,
+  MainAxisSize mainAxisSize = MainAxisSize.max,
+  List<Widget> children = const <Widget>[],
+})
+
+Column({
+  Key key,
+  MainAxisAlignment mainAxisAlignment = MainAxisAlignment.start,
+  CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.center,
+  MainAxisSize mainAxisSize = MainAxisSize.max,
+  List<Widget> children = const <Widget>[],
+})
+
+特别注意: 由于Column组件次轴方向上（即水平）默认是居中对齐，所以水平方向上不会撑满其父容器，此时需要指定CrossAxisAlignment.stretch才可以
+
+
+3.   Stack/Positioned(绝对定位布局组件)  搭配使用, Stack是绝对定位的容器, Positioned组件通过left,top,right,bottom四个方向上的属性值来决定其在父容器中的位置
+
+Container(
+  height: 100,
+  color: Colors.yellow,
+  child: Stack(
+    children: <Widget>[
+      Positioned(
+        left: 10,
+        top: 10,
+        child: Container(width: 10, height: 10, color: Colors.red),
+      ),
+      Positioned(
+        right: 10,
+        top: 10,
+        child: Container(width: 10, height: 10, color: Colors.red),
+      ),
+      Positioned(
+        left: 10,
+        bottom: 10,
+        child: Container(width: 10, height: 10, color: Colors.red),
+      ),
+      Positioned(
+        right: 10,
+        bottom: 10,
+        child: Container(width: 10, height: 10, color: Colors.red),
+      ),
+    ],
+  ),
+)
+
+
+
