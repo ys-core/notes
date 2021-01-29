@@ -55,7 +55,7 @@ const FocusInput = () =>{
 createRef每次宣言都会返回一个新的引用,而useRef每次都会返回相同的引用
 
 
-4. useCallback
+4. useCallback         是对useEffect相同逻辑的封装
 
     const memoizedCallback = useCallback(
         () => {
@@ -158,9 +158,10 @@ useLatest(({isSubscribe}) => fetchData(args).then(ret => {
 
 
 
+6. useMemo
 
-
-
+	useMemo主要用于性能优化,它接受一个函数参数和一个依赖数组参数
+	let memoizedValue=useMemo(()=>{return a*10},[a])
 
 
 

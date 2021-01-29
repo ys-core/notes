@@ -165,8 +165,15 @@ useContext:
 	}
 	export default App;
 
+    若有多个context,则获取最近的那一个,
 
-
+	return (
+		<Bird.Provider value={{a:0}}>
+		   <Bird.Provider value={{a:10}}>
+			  <Case />        //在Case中获取Bird的信息站会获取{a:10}
+		   </Bird.Provider>
+		</Bird.Provider>
+	)
 
 
 

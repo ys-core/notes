@@ -1,0 +1,140 @@
+
+1. 代码分割:
+
+    	 敲代码时用export/import,打包后的生产环境会一次性加载所有模块,代码分割可以实现在需要使用的时候再去加载,是性能优化的一种手段
+
+	React.lazy     接受一个函数,这个函数需要动态调用import(), 它必须返回一个Promise,该Promise需要resolve一个default export的React组件
+
+	React.lazy(()=>import('./one'))
+	React.lazy(()=>Promise.resolve(import('./one')))   
+	//这两句是等价的
+----------------------------------------------------------------------------------------------------------------
+...
+return ( 
+<div>
+<Suspense fallback={<div>loading...</div>}>
+<Two/>
+<One/>
+</Suspense>
+</div>
+)
+
+
+Suspense是React对懒加载的一个补充,当加载未完成时fallback属性的jsx暂时替代Suspense的children,懒加载完成后就会显示Two和One组件
+
+
+2. 基于路由实现代码的分割
+
+import React, { Suspense } from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+
+const App = React.lazy(() => import('../components/App'))
+const Counter = React.lazy(() => import('../components/Counter'))
+const Hooks = React.lazy(() => import('../components/Hooks'))
+
+const Application = () => (
+  <Router>
+    <Suspense fallback={<div>Loading...</div>}>
+      <Switch>
+        <Route exact path="/" component={App}/>
+        <Route path="/counter" component={Counter}/>
+        <Route path="/hooks" component={Hooks}/>
+      </Switch>
+    </Suspense>
+  </Router>
+);
+
+
+或者
+const Application = () => (
+  <Router>
+        <Suspense fallback={<div>Loading homepage</div>}>
+            <Switch>
+                    <Route exact path="/" component={App}/>
+            </Switch>
+        </Suspense>
+        <Suspense fallback={<div>Loading.../counter</div>}>
+            <Switch>
+                    <Route path="/counter" component={Counter}/>
+            </Switch>
+        </Suspense>
+        <Suspense fallback={<div>Loading.../hooks</div>}>
+            <Switch>
+                    <Route path="/hooks" component={Hooks}/>
+            </Switch>
+        </Suspense>
+  </Router>
+);
+
+
+
+
+3. Refs转发                    将ref自动地通过组件传递到其一子组件的技巧,
+
+React.forwardRef 方法接受一个函数，函数的参数分别是props和ref，现在让我们重新写一下这个示例  
+
+	const FancyButton = React.forwardRef((props, ref) => (
+	  <button ref={ref} className="FancyButton">
+		{props.children}
+	  </button>
+	));
+
+	// 你可以直接获取 DOM button 的 ref：
+	const ref = React.createRef();
+	<FancyButton ref={ref}>Click me!</FancyButton>;
+
+FancyButton 的组件可以获取底层 DOM 节点 button 的 ref ，并在必要时访问，就像其直接使用 DOM button 一样。
+     以下是对上述示例发生情况的逐步解释：
+
+	.我们通过调用 React.createRef 创建了一个 React ref 并将其赋值给 ref 变量。
+	.我们通过指定 ref 为 JSX 属性，将其向下传递给 <FancyButton ref={ref}>。
+	.React 传递 ref 给 forwardRef 内函数 (props, ref) => ...，作为其第二个参数。
+	.我们向下转发该 ref 参数到 <button ref={ref}>，将其指定为 JSX 属性。
+	.当 ref 挂载完成，ref.current 将指向 <button> DOM 节点。
+
+或者如下方式
+	class App extends React.Component{
+		constoructor(props){
+		super(props)
+			this.ref=React.createRef()
+		}
+		render(){
+			return (<Refs ref={this.ref}/>)
+		}
+	}
+	function Case(props,ref){
+		return(<button ref={ref}>Hello World</button>)
+	}
+	const Refs=React.forwarRef(Case)
+	//现在App中的this.ref拿到Case中的button元素了
+
+
+4. Portals       ReactDOM.createPortal(child, container)   提供了可以将子节点渲染到存在于父组件以外的DOM节点的方案
+
+    --- child 是任意可渲染的React子元素,如元素、字符串、fragment等, container是一个DOM元素节点
+
+
+fucntion Counter(){
+
+    return(
+       <>
+            <Portals>
+                <button onClick={ hanldeClick }>点击这里 </button>
+              
+            </Portals>
+
+        </>
+    );
+}
+
+
+function Portals(props){
+    return ReactDOM.createPortal(props.children, document.querySelector('#root'))
+}
+
+export default Counter
+
+
+
+
+

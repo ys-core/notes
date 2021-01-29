@@ -1,0 +1,45 @@
+
+1. Virtual DOM就是用一个原生的js对象去描述一个DOM节点,它比创建一个DOM节点的代价要小得多
+
+2. Virual DOM就是一个普通的JavaScript对象,是真实DOM的JavaScript对象表示,包含了tag、props、children三个属性,
+	export default function FirstPost() {
+	  return <h1>First Post</h1>
+	}
+
+---------------------------------------------------------------------------------------------------------
+
+	{
+		tag: 'div',
+		props: {
+			id: 'app'
+		},
+		children: [
+			tag: 'p',
+			props: {
+				className: 'text'
+			},
+			children: [
+				'TXM to SFM'
+			]
+		
+		]
+	}
+
+
+3.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
