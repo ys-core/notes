@@ -1,0 +1,216 @@
+
+请求与当前站点的协议、域名、端口不同的站点资源的时候会发生跨域, 
+
+浏览器限制同源策略内容
+	1>  Cookie、LocalStorage、IndexedDB等存储型内容
+	2>  DOM节点
+	3>  Ajax请求发送后,结果被浏览器拦截了
+
+允许跨域加载的三类资源:
+	1>   <img src=***>
+	2>   <link href=***>
+	3>   <script src=***>
+
+
+
+下面是所有跨域解决方案
+--------------------------------------------------------------------------------------------------
+1.jsonp
+
+	1> 动态创建script标签的指定src属性值为目标资源地址, 请求完毕后通过调用callback的方式传回结果,
+	2> 只支持GET请求方式
+	3> jsonp在调用失败的时候不会返回各种HTTP状态码
+	4> 相比于Ajax,Ajax是同源策略,jsonp属性非同源策略方案
+
+
+
+
+2.cors   Cross-origin resource sharing
+
+	1> cors需要浏览器和服务器同时支持,才可以实现跨域的请求, 此方案集合所有的浏览器都支持,但IE必须10以上, ie8/9通过XDomainRequest来实现
+	2> 请求类型分为    简单请求 & 复杂请求
+	3>  简单请求:  
+		请求方法为   GET / HEAD / POST  之一
+		Content-Type的值仅限于下列三者之一
+			 text/plain
+			 multipart/form-data
+			 application/x-www-form-urlencoded
+
+	   注意: 对于简单请求,浏览器会直接发送cors请求,具体来说就是在header中加入origin请求头字段,在响应头服务器会设置相关的cors请求,响应头字段为允许跨域请求的源
+
+	4> 复杂请求:
+		请求方法为 PUT / DELETE / CONNECT / OPTIONS /TRACE / PATCH
+		Content-Type的不属于下列三者之一
+			 text/plain
+			 multipart/form-data
+			 application/x-www-form-urlencoded
+
+		 满足上述两个条件的都是复杂请求,浏览器会自动先发送一个options请求,如果浏览器发现支持该请求,则会将真正的请求发送到后端,如果不支持，则会在控制台报错
+		 
+		 cors字段介绍
+		 Access-Control-Allow-Methods: 该字段是必要的,它的值是逗号分隔的一个字符串,表明服务器支持的所有跨域请求的方式
+		 Access-Control-Allow-Headers: 如果浏览器请求包括这个字段，则这个字段也是必须的，它也是一个逗号分隔的字符串，
+					   表明服务器支持的所有头信息字段，不限于浏览器在“预检"中请求的字段
+		  Access-Control-Allow-Credentials: 该字段与简单请求时的含义相同
+		 Access-Control-Max-Age:  字段可选,指定本次预检请求的有效期,单位为秒,
+
+	5> cors比jsonp更可靠, 更强大, 支持所有类型的HTTP请求
+	6> 使用cors,可以使用XMLHttpRequest发起请求和获取数据,比jsonp有更好的错误处理
+	7> jsonp的优势在于支持老式浏览器和可以向cors的网络请求数据
+
+
+
+
+3. postMessage
+
+    postMessage方法允许来自不同源的脚本采用异步方式进行有限的同通信,可以实现跨文本档、多窗口、跨域消息传递
+    otherWindow.postMessage(message, targetOrigin, [transfer])
+       otherWindow: 其它窗口(目标窗口)的引用，比如iframe的contentWindow属性、执行
+       message: 将要发送到其他window的数据，这个数据会自动被序列化，数据格式也不受限制(字符串，对象都可以)
+       targetOrigin: 目标窗口的源，可以是字符串*表示无限制，或URL,需要协议端口号和主机都匹配才会发送
+       transfer: 是一串和message同时传递的Tranferable对象，这些对象的所有权将 被转移给消息接收方，而发送一方将不再保有所有权
+
+1>  IE8+, chrome, firefox, opera, safari都支持这个功能
+
+
+
+4. document.domain
+
+   主要用于主域相同的域之间的数据通信, 注意仅限   主域相同子域不同的跨用应用场景
+   实现原理:  2个页面都通过js强制设置document.domain为基础主域,就实现了同域
+
+
+
+5. window.name
+ 
+    window.name是一个window对象的内置属性,name属性可以设置或返回存放窗口的名称的一个字符串
+	该属性有以下特征:
+
+	1> 每个窗口都有独立的window.name与之对应
+	2> 在一个窗口的生命周期中(被关闭前),窗口载入的所有页面同事共享一个window.name,每个页面window.name都有读写曲权限
+	3>  window.name一直存在于当前窗口,即使是新的页面载入也不会改变window.name的值(比如在控制台执行location.href="http://www.google.com/"发生跳转后,window.name不会发生变化)
+	4>  window.name可以存储不超过2M的数据,数据个数按需自定义
+	5> 借助  <iframe    >实现通信
+
+///////////////////////////////////////////////////////////////////////
+	假设我们有3个页面，
+	a.com/index.html
+	a.com/empty.html
+	b.com/index.html
+
+	（1）在a.com/index.html页面中嵌入一个iframe，设置src为b.com/index.html
+	（2）b.com/index.html载入后，设置window.name，然后再使用location.href='a.com/empty.html'跳转到与iframe外页面同域的页面中。
+	（3）在a.com/index.html页面中，就可以通过$('iframe').contentWindow.name来获取iframe内页面a.com/empty.html的window.name值了，而这个值正是b.com/index.html设置的。
+
+	注意: 使用iframe的src属性,可以加在不同域中的网页,也可以使用$('iframe').contentWindow来拿到iframe中页面的window对象,只是这个window对象中可以访问的属性是很少的
+		Object.keys($('iframe').contentWindow);
+	["postMessage", "blur", "focus", "close", "parent", "opener", "top", "length", "frames", "closed", "location", "self", "window"]
+//////////////////////////////////////////////////////////////////
+
+
+
+
+
+6. location.hash
+
+	   location是js里面的内置对象,如location.href就用来管理页面的url,用locatiion.href-url就可以直接将页面重定向url
+	而location.hash则可以用来获取或者设置页面的标签值,hash属性是一个可读可写的字符串,该字符串是url的锚部分(从#号开始的部分)
+	  
+     http://www.juejin.com/index.html#drafts
+   
+	1> 单单改变#后面的内容不会触发网页重构,浏览器只会滚动到相应的位置,
+	2> 每一次改变#后面的部分,都会在浏览器的访问历史中增加一个记录,使用 后退 按钮 就可以回到上一个位置
+	3> window.location.hash这个属性可读可写,读取时用来判断网页状态是否改变;写入时会在不重载网页的前提下,创造一个访问历史记录
+	4> onhashchange事件, 当#值发生变化时,就会触发这个事件 IE8+,firefox,chrome,safari支持该事件
+	5> 借助<iframe     >  实现跨域通信
+
+
+
+
+
+
+
+7. nginx
+
+	一、  nginx配置解决iconfont跨域
+
+	浏览器跨域访问js、css、img等常规静态资源被同源策略许可，但iconfont字体文件(eot|otf|ttf|woff|svg)例外，此时可在nginx的静态资源服务器中加入以下配置。
+
+	location / {
+	  add_header Access-Control-Allow-Origin *;
+	}
+
+	二、 nginx反向代理跨域接口跨域
+
+	跨域原理: 同源策略时浏览器的安全策略,不是http协议的一部分。服务器端调用http接口只是使用http协议,不会执行js脚本,不需要同源策略,也就不存在跨域问题.
+
+	实现思路: 通过nginx配置一个代理服务器(域名与domain1相同,端口不同),反向代理访问domain2接口,并且可以顺便修改cookie中domain信息，方便当前域cookie写入,实现跨域登录
+
+	nginx具体配置：
+
+	#proxy服务器
+	server {
+		listen       81;
+		server_name  www.domain1.com;
+
+		location / {
+			proxy_pass   http://www.domain2.com:8080;  #反向代理
+			proxy_cookie_domain www.domain2.com www.domain1.com; #修改cookie里域名
+			index  index.html index.htm;
+
+			# 当用webpack-dev-server等中间件代理接口访问nignx时，此时无浏览器参与，故没有同源限制，下面的跨域配置可不启用
+			add_header Access-Control-Allow-Origin http://www.domain1.com;  #当前端只跨域不带cookie时，可为*
+			add_header Access-Control-Allow-Credentials true;
+		}
+	}
+	1.) 前端代码示例：
+
+	var xhr = new XMLHttpRequest();
+
+	// 前端开关：浏览器是否读写cookie
+	xhr.withCredentials = true;
+
+	// 访问nginx中的代理服务器
+	xhr.open('get', 'http://www.domain1.com:81/?user=admin', true);
+	xhr.send();
+	2.) Nodejs后台示例：
+
+	var http = require('http');
+	var server = http.createServer();
+	var qs = require('querystring');
+
+	server.on('request', function(req, res) {
+		var params = qs.parse(req.url.substring(2));
+
+		// 向前台写cookie
+		res.writeHead(200, {
+			'Set-Cookie': 'l=a123456;Path=/;Domain=www.domain2.com;HttpOnly'   // HttpOnly:脚本无法读取
+		});
+
+		res.write(JSON.stringify(params));
+		res.end();
+	});
+
+	server.listen('8080');
+	console.log('Server is running at port 8080...');
+
+
+
+
+8. nodejs中间件代理跨域
+
+    原理大致与nginx相同,都是通过启用一个代理服务器,实现数据的转发,也可以通过设置cookieDomainRewrite参数修改响应头中cookie中域名,实现当前域的cookie写入,方便登录认证
+
+
+
+9. websocket
+
+	   WebSocket是一种网络通信协议，它实现了浏览器与服务器全双工通信，同时允许跨域通讯。原生WebSocket API使用起来不太方便，
+	我们使用Socket.io，它很好地封装了webSocket接口，提供了更简单、灵活的接口，也对不支持webSocket的浏览器提供了向下兼容
+
+
+
+10. React中可以前端使用http-proxy-middle实现跨多域噢~
+
+
+
