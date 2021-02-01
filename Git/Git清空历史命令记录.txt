@@ -1,0 +1,3 @@
+
+
+直接将users/username/.bash_history文件删除或者清空即可

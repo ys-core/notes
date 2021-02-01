@@ -111,7 +111,8 @@ FancyButton 的组件可以获取底层 DOM 节点 button 的 ref ，并在必�
 
 4. Portals       ReactDOM.createPortal(child, container)   提供了可以将子节点渲染到存在于父组件以外的DOM节点的方案
 
-    --- child 是任意可渲染的React子元素,如元素、字符串、fragment等, container是一个DOM元素节点
+    --- child 是任意可渲染的React子元素,如元素、字符串、fragment等, container是一个DOM元素节点,此参数通常为this.props.children
+    --- container 为需要该挂载到的DOM节点
 
 
 fucntion Counter(){

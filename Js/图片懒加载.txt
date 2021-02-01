@@ -1,0 +1,40 @@
+
+
+懒加载是一种网页性能优化的方式,提升用户体验,减少流量
+
+原理: 图片的标签是img标签, 图片来源是src属性,浏览器是否发起加载图片的请求是根据是否有src属性决定的
+           所以从img标签的src属性入手,在没进入到而是区域的时候,先不给img标签的src属性赋值
+
+<body>
+    <div>
+        <img data-src="https://cdn.suisuijiang.com/ImageMessage/5adad39555703565e79040fa_1590657907683.jpeg">
+        <img data-src="https://cdn.suisuijiang.com/ImageMessage/5adad39555703565e79040fa_1590657913523.jpeg">
+        <img data-src="https://cdn.suisuijiang.com/ImageMessage/5adad39555703565e79040fa_1590657925550.jpeg">
+        <img data-src="https://cdn.suisuijiang.com/ImageMessage/5adad39555703565e79040fa_1590657930289.jpeg">
+        <img data-src="https://cdn.suisuijiang.com/ImageMessage/5adad39555703565e79040fa_1590657934750.jpeg">
+        <img data-src="https://cdn.suisuijiang.com/ImageMessage/5adad39555703565e79040fa_1590657918315.jpeg">
+    </div>
+</body>
+
+
+1. 监听scroll事件判断元素是否进入视口
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
