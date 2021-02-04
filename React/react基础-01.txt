@@ -1,0 +1,252 @@
+
+
+1. pure component ?
+
+        React.PureComponent 与 React.Component 完全相同，只是它为你处理了 shouldComponentUpdate() 方法。当属性或状态发生变化时，PureComponent 将对属性和状态进行浅比较。
+   另一方面，一般的组件不会将当前的属性和状态与新的属性和状态进行比较。因此，在默认情况下，每当调用 shouldComponentUpdate 时，默认返回 true，所以组件都将重新渲染。
+
+2.  forward ref ?
+
+     允许一些组件获取接收到ref对象并将它进一步传递给子组件
+
+	const ButtonElement = React.forwardRef((props, ref) => (
+	  <button ref={ref} className="CustomButton">
+		{props.children}
+	  </button>
+	));
+
+	// Create ref to the DOM button:
+	const ref = React.createRef();
+	<ButtonElement ref={ref}>{'Forward Ref'}</ButtonElement>
+
+3.   HOC ?
+
+     高阶组件(HOC) 就是一个函数，且该函数接受一个组件作为参数，并返回一个新的组件，它只是一种模式，这种模式是由react自身的组合性质必然产生的
+     我们将它们称为纯组件，因为它们可以接受任何动态提供的子组件，但它们不会修改或复制其输入组件中的任何行为。
+
+      const EnhancedComponent = higherOrderComponent(WrappedComponent)
+
+      1.   代码复用,逻辑抽象化
+      2.   渲染劫持
+      3.   抽象化和操作状态(state)
+      4.   操作属性(props)
+
+      属性代理 props proxy :  通过包裹原来的组件来操作props
+
+		import React, { Component } from 'React';
+		//高阶组件定义
+		const HOC = (WrappedComponent) =>
+		 class WrapperComponent extends Component {
+			render() {
+			  return <WrappedComponent {...this.props} />;
+			}
+		}
+		//普通的组件
+		class WrappedComponent extends Component{
+			render(){
+				//....
+			}
+		}
+
+		//高阶组件使用
+		export default HOC(WrappedComponent)
+
+	反向继承
+	　　反向继承是指返回的组件去继承之前的组件(这里都用WrappedComponent代指)
+
+	  const HOC = (WrappedComponent) =>
+	    class extends WrappedComponent {
+		  render() {
+		  return super.render();
+		  }
+		 }
+	 
+4. Context
+
+	  Context通过组件树提供了一个传递数据的方法，从而避免了在每一个层级手动的传递props。比如，需要在应用中许多组件需要访问登录用户信息、地区偏好、UI主题等
+	
+	
+	// 创建一个 theme Context,  默认 theme 的值为 light
+	const ThemeContext = React.createContext('light');
+
+	function ThemedButton(props) {
+	  // ThemedButton 组件从 context 接收 theme
+	  return (
+		<ThemeContext.Consumer>
+		  {theme => <Button {...props} theme={theme} />}
+		</ThemeContext.Consumer>
+	  );
+	}
+
+	// 中间组件
+	function Toolbar(props) {
+	  return (
+		<div>
+		  <ThemedButton />
+		</div>
+	  );
+	}
+
+	class App extends React.Component {
+	  render() {
+		return (
+		  <ThemeContext.Provider value="dark">
+			<Toolbar />
+		  </ThemeContext.Provider>
+		);
+	  }
+	}
+		
+	
+5.   children属性?
+
+	Children是一个属性（this.props.chldren），它允许你将组件作为数据传递给其他组件，就像你使用的任何其他组件一样。在组件的开始和结束标记之间放置的组件树将作为children属性传递给该组件。
+
+	React API 中有许多方法中提供了这个不透明数据结构的方法，包括：React.Children.map、React.Children.forEach、React.Children.count、React.Children.only、React.Children.toArray。
+
+	const MyDiv = React.createClass({
+	  render: function() {
+		return <div>{this.props.children}</div>
+	  }
+	})
+
+	ReactDOM.render(
+	  <MyDiv>
+		<span>{'Hello'}</span>
+		<span>{'World'}</span>
+	  </MyDiv>,
+	  node
+	)
+	
+	
+6.  构造函数使用带props参数的目的?
+
+     调用super()方法之前,子类构造函数不能使用this引用;将props参数传递给super()的主要原因是为了在子构造函数中访问this.props
+
+7.  reconciliation ?
+
+    当组件的props或state发生更改时，React 通过将新返回的元素与先前呈现的元素进行比较来确定是否需要实际的 DOM 更新。当它们不相等时，React 将更新 DOM 。此过程称为reconciliation	 
+	
+8.  为什么React.Fragment比容器div更好 ?
+
+    1> 通过不创建额外的DOM节点,Fragment更快并且使用更少的内存,在非常大而深的节点树中使用很有好处
+    2> 一些css机制如flexbox和Grid具有特殊的父子关系,如果中间添加div将使得很难保持所需的结构
+    3> 在DOM审查器中不会那么杂乱	
+	
+9.  Portal ?
+
+    Portal提供了一种很好的将子节点渲染到父组件以外的DOM节点的方式, ReactDOM.createPortal(child,container)    // child为任何可渲染的React子节点,container为需要挂载到的DOM节点位置
+	
+10. dangerouslySetInnerHTML 替代在浏览器DOM中使用innerHTML,与innerHTML一样,考虑到跨站点攻击XSS,使用此属性也是有风险的
+	
+	
+11.  Decorator	
+	JavaScript中，装饰器是一种用于修饰类(class)、方法、属性的装饰，以其最简单的形式只是将一段代码与另一段代码包装在一起的一种方式-实际上就是“修饰”它。
+
+
+12.  ReactDOMServer   SSR
+
+	React 已经配备了用于处理 Node 服务器上页面渲染的功能。你可以使用特殊版本的 DOM 渲染器，它遵循与客户端相同的模式。
+
+	import ReactDOMServer from 'react-dom/server'
+	import App from './App'
+
+	ReactDOMServer.renderToString(<App />)
+	此方法将以字符串形式输出常规 HTML，然后将其作为服务器响应的一部分放在页面正文中。在客户端，React 检测预渲染的内容并无缝地衔接。
+
+13.  getDerivedStateFromProps()生命周期方法
+
+      新的静态 getDerivedStateFromProps() 生命周期方法在实例化组件之后以及重新渲染组件之前调用。它可以返回一个对象用于更新状态，或者返回 null 指示新的属性不需要任何状态更新。
+
+
+14.  在组件类中方法的推荐顺序是什么?
+
+	从 mounting 到 render stage 阶段推荐的方法顺序：
+
+	static 方法
+	constructor()
+	getChildContext()
+	componentWillMount()
+	componentDidMount()
+	componentWillReceiveProps()
+	shouldComponentUpdate()
+	componentWillUpdate()
+	componentDidUpdate()
+	componentWillUnmount()
+	点击处理程序或事件处理程序，如 onClickSubmit() 或 onChangeDescription()
+	用于渲染的getter方法，如 getSelectReason() 或 getFooterContent()
+	可选的渲染方法，如 renderNavigation() 或 renderProfilePicture()
+	render()
+
+
+15. React中支持哪些指针事件?
+
+    目前以下事件类型在 React DOM 中是可用的：
+
+	onPointerDown
+	onPointerMove
+	onPointerUp
+	onPointerCancel
+	onGotPointerCapture
+	onLostPointerCapture
+	onPointerEnter
+	onPointerLeave
+	onPointerOver
+	onPointerOut
+
+16. 不调用setState()的情况下,怎样强制重新渲染?
+
+    通常状态下,当组建的状态或属性改变时,组件将重新渲染.如果你的render()方法依赖于其他数据,可以通过forceUpdate()来告诉React,当前组件需要重新渲染
+	component.forceUpdate(callback)
+	当然应该避免使用 forceUpdate(),并且只在render()方法中读取 this.props 和 this.state
+
+17. React和ReactDOM的区别?
+
+    react包中包含 React.createElement(), React.Component, React.Children,以及与元素和组件类相关的其他帮助程序
+	react-dom包中包含了ReactDOM.render(),在 react-dom/server 包中有支持服务端渲染的 ReactDOMServer.renderToString() 和 ReactDOMServer.renderToStaticMarkup() 方法。
+	
+18. React如何使用label ?
+
+	如果你尝试使用标准的 for 属性将 <label> 元素绑定到文本输入框，那么在控制台将会打印缺少 HTML 属性的警告消息。
+
+	<label for={'user'}>{'User'}</label>
+	<input type={'text'} id={'user'} />
+	因为 for 是 JavaScript 的保留字，请使用 htmlFor 来替代。
+
+	<label htmlFor={'user'}>{'User'}</label>
+	<input type={'text'} id={'user'} />
+	
+19. setState() 和 replaceState() 方法之间有什么区别?
+
+    当你使用 setState() 时，当前和先前的状态将被合并。replaceState() 会抛出当前状态，并仅用你提供的内容替换它。通常使用 setState()，除非你出于某种原因确实需要删除所有以前的键。你还可以在 setState() 中将状态设置为 false/null，而不是使用 replaceState()。
+	
+	
+	
+20. 在React状态中删除数组元素推荐方法为Array.prototype.filter()	
+	
+	removeItem(index) {
+	  this.setState({
+		data: this.state.data.filter((item, i) => i !== index)
+	  })
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
